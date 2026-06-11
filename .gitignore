@@ -1,0 +1,26 @@
+# Python caches and byte-code
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Large Model weights (prevent committing to GitHub)
+*.pt
+*.pth
+integration/models/
+
+# VS Code settings
+.vscode/
+
+# Local/OS files
+.DS_Store
+Thumbs.db
+
+# Output/Snapshots
+integration/snapshots/
+*.jpg
+*.png
+*.mp4
+*.avi
+*.mkv
+*.mov

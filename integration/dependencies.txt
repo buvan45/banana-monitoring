@@ -1,0 +1,22 @@
+# --- Core Python Libraries ---
+pip install opencv-python
+pip install numpy
+pip install pillow
+
+# --- PyTorch + Torchvision ---
+# CPU version (recommended since your code uses device="cpu")
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+# --- YOLO / Ultralytics ---
+pip install ultralytics
+
+# --- Streamlit ---
+pip install streamlit
+
+# --- Additional Required Modules ---
+pip install matplotlib
+pip install tqdm
+pip install requests
+
+# --- frontend.py ---
+streamlit run frontend.py (terminal)
