@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.git
+.gitignore
+.dockerignore
+snapshots/*.jpg
+temp_uploads/*
+.gemini/
+brain/
+scratch/

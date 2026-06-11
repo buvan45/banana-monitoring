@@ -1,16 +1,10 @@
 import cv2
-from ultralytics import YOLO
-
-from pathlib import Path
-import os
-
-_PROJECT_DIR = Path(__file__).resolve().parent.parent
-tree_model_path = str(_PROJECT_DIR.joinpath("models", "tree_counter.pt"))
 
 def run_tree_counter(image_path):
-    if not os.path.exists(tree_model_path):
-        raise FileNotFoundError(f"Model weights not found at: {tree_model_path}")
-    model = YOLO(tree_model_path)
+    from pathlib import Path
+    from ultralytics import YOLO
+    _THIS_DIR = Path(__file__).resolve().parent
+    model = YOLO(str(_THIS_DIR.parent.joinpath("models", "tree_counter.pt")))
 
     results = model.predict(
         source=image_path,

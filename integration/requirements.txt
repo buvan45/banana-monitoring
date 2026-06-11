@@ -1,0 +1,11 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+flask
+numpy
+opencv-python-headless
+pillow
+torch
+torchvision
+ultralytics
+timm
+albumentations
+werkzeug

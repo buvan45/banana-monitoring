@@ -15,12 +15,11 @@ from typing import Optional, Tuple, List
 import numpy as np
 import cv2
 
-# ultralytics import (kept as in original)
-from ultralytics import YOLO
+# ultralytics import moved to get_banana_model to support lazy loading
 
 # Candidate model paths (add any other known paths here)
 CANDIDATE_MODEL_PATHS = [
-    Path(r"C:\Users\buvan\Downloads\division\integration\models\banana_counter.pt"),
+    Path(r"E:\SDP\integration\models\banana_counter.pt"),
     Path(__file__).resolve().parent.parent.joinpath("models", "banana_counter.pt"),  # project_root/integration/models
     Path(__file__).resolve().parent.joinpath("models", "banana_counter.pt"),         # integration/drivers/models
     Path.cwd().joinpath("models", "banana_counter.pt"),
@@ -28,7 +27,7 @@ CANDIDATE_MODEL_PATHS = [
 ]
 
 # Module-level cache for the loaded model
-_BANANA_MODEL = None  # type: Optional[YOLO]
+_BANANA_MODEL = None  # type: Optional['YOLO']
 
 
 def _find_model_path() -> Optional[Path]:
@@ -38,7 +37,7 @@ def _find_model_path() -> Optional[Path]:
     return None
 
 
-def get_banana_model(weights_path: Optional[str] = None) -> YOLO:
+def get_banana_model(weights_path: Optional[str] = None) -> 'YOLO':
     """
     Return a loaded YOLO model. Load lazily on first call.
     If weights_path not provided, searches CANDIDATE_MODEL_PATHS.
@@ -47,6 +46,8 @@ def get_banana_model(weights_path: Optional[str] = None) -> YOLO:
     global _BANANA_MODEL
     if _BANANA_MODEL is not None:
         return _BANANA_MODEL
+
+    from ultralytics import YOLO
 
     # determine path
     if weights_path:

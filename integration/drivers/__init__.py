@@ -170,10 +170,23 @@ def _make_adapter(mod, display_name=None):
                     if isinstance(a, str):
                         label = a
                         vis = b if isinstance(b, np.ndarray) else None
+                        conf = 1.0
+                        if isinstance(b, dict):
+                            for k in ("prob", "probability", "confidence"):
+                                if k in b:
+                                    try:
+                                        val = b[k]
+                                        if isinstance(val, str) and "%" in val:
+                                            conf = float(val.replace("%", "").strip()) / 100.0
+                                        else:
+                                            conf = float(val)
+                                        break
+                                    except Exception:
+                                        pass
                         return {
                             "type": "classification",
                             "label": label,
-                            "confidence": 1.0,
+                            "confidence": conf,
                             "vis": vis,
                         }
 

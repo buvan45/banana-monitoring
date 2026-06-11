@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿 Banana & Models Monitor Dashboard</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Premium Styling -->
+    <style>
+        :root {
+            --bg-primary: #090d16;
+            --bg-secondary: #0f172a;
+            --bg-tertiary: #1e293b;
+            --accent-primary: #6366f1;
+            --accent-primary-hover: #4f46e5;
+            --accent-secondary: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dark: #64748b;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            --glow-indigo: 0 0 20px rgba(99, 102, 241, 0.15);
+            --glow-emerald: 0 0 20px rgba(16, 185, 129, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        /* Layout Grid */
+        .app-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        aside {
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            max-height: 100vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-area i {
+            font-size: 24px;
+            color: var(--success);
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .logo-text h1 {
+            font-size: 18px;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text span {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .sidebar-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        select:focus, input[type="text"]:focus, input[type="number"]:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Range Slider Styling */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            flex-grow: 1;
+            accent-color: var(--accent-primary);
+            height: 6px;
+            border-radius: 3px;
+            background-color: var(--bg-tertiary);
+            outline: none;
+        }
+
+        .slider-value {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--accent-secondary);
+            min-width: 36px;
+            text-align: right;
+        }
+
+        /* Checkbox Switch Styling */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 0;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-tertiary);
+            transition: .3s;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-muted);
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+            background-color: white;
+        }
+
+        /* Mode Selector Buttons */
+        .mode-tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mode-btn {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .mode-btn i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .mode-btn:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+        }
+
+        .mode-btn.active {
+            background-color: rgba(99, 102, 241, 0.08);
+            border-color: var(--accent-primary);
+            color: var(--text-main);
+            box-shadow: var(--glow-indigo);
+        }
+
+        /* Buttons styling */
+        .btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-primary-hover);
+        }
+
+        .btn-primary:disabled {
+            background-color: var(--text-dark);
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.04);
+        }
+
+        .btn-danger {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger:hover {
+            background-color: rgba(239, 68, 68, 0.25);
+        }
+
+        /* Main Workspace Content Area */
+        main {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+
+        /* Metric Telemetry Cards Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .metric-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .metric-info h3 {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .metric-icon {
+            font-size: 24px;
+            color: var(--text-dark);
+            background-color: var(--bg-tertiary);
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .metric-card.active-metric {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: var(--glow-indigo);
+        }
+
+        .metric-card.active-metric .metric-icon {
+            color: var(--accent-secondary);
+            background-color: rgba(99, 102, 241, 0.05);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        .metric-card.success-metric .metric-icon {
+            color: var(--success);
+            background-color: rgba(16, 185, 129, 0.05);
+            border-color: rgba(16, 185, 129, 0.2);
+            box-shadow: var(--glow-emerald);
+        }
+
+        /* Viewport Container for Streams/Images */
+        .viewport-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .viewport-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .viewport-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .viewport-title i {
+            color: var(--accent-secondary);
+            font-size: 18px;
+        }
+
+        .live-badge {
+            background-color: var(--danger);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            animation: pulse-red 1.5s infinite;
+        }
+
+        .live-badge.inactive {
+            background-color: var(--bg-tertiary);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            animation: none;
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .viewport-window {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            min-height: 480px;
+            max-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stream-view {
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            max-height: 480px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .stream-view.active-img {
+            display: block;
+        }
+
+        .viewport-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .viewport-placeholder i {
+            font-size: 64px;
+            color: var(--text-dark);
+        }
+
+        /* Image Drag and Drop Zone */
+        .upload-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.01);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--accent-primary);
+            background-color: rgba(99, 102, 241, 0.03);
+            color: var(--text-main);
+        }
+
+        .upload-zone i {
+            font-size: 40px;
+            color: var(--accent-secondary);
+        }
+
+        .upload-zone-text h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .upload-zone-text p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Action bar for viewport */
+        .viewport-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .actions-left, .actions-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Hidden media stream elements */
+        #webcam-video {
+            display: none;
+        }
+
+        /* Split bottom columns (Logs and Snapshots) */
+        .dashboard-bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 20px;
+        }
+
+        /* Terminal Console */
+        .console-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .console-window {
+            background-color: #04060a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #10b981;
+            height: 200px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .console-line {
+            margin-bottom: 6px;
+            word-break: break-all;
+        }
+
+        .console-line .timestamp {
+            color: #64748b;
+            margin-right: 8px;
+        }
+
+        .console-line.error-line {
+            color: var(--danger);
+        }
+
+        .console-line.info-line {
+            color: var(--accent-secondary);
+        }
+
+        /* Snapshots Gallery */
+        .gallery-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .gallery-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            height: 200px;
+            overflow-y: auto;
+            align-content: start;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 4/3;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            background-color: rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+            border-color: var(--accent-primary);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-item-actions {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(9, 13, 22, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .gallery-item:hover .gallery-item-actions {
+            opacity: 1;
+        }
+
+        .gallery-action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .gallery-action-btn:hover {
+            background-color: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .gallery-action-btn.del-btn:hover {
+            background-color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .gallery-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-dark);
+            padding: 40px 0;
+            font-size: 13px;
+        }
+
+        /* Modal Overlay */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(9, 13, 22, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 30px;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 85%;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: white;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent-primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(9, 13, 22, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 2;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .loading-overlay span {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <aside>
+        <div class="logo-area">
+            <i class="fa-solid fa-seedling"></i>
+            <div class="logo-text">
+                <h1>Banana & Models</h1>
+                <span>Inference Dashboard</span>
+            </div>
+        </div>
+
+        <!-- Model Configuration -->
+        <div class="sidebar-section">
+            <div class="sidebar-label">Active Model</div>
+            <div class="form-group">
+                <select id="model-select">
+                    <option value="" disabled selected>Loading models...</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Mode Selector -->
+        <div class="sidebar-section">
+            <div class="sidebar-label">Select Mode</div>
+            <div class="mode-tabs">
+                <button class="mode-btn active" data-mode="webcam">
+                    <i class="fa-solid fa-camera"></i>
+                    Web Camera
+                </button>
+                <button class="mode-btn" data-mode="drone">
+                    <i class="fa-solid fa-helicopter"></i>
+                    Drone RTMP
+                </button>
+                <button class="mode-btn" data-mode="video">
+                    <i class="fa-solid fa-circle-play"></i>
+                    Video Demo
+                </button>
+                <button class="mode-btn" data-mode="image">
+                    <i class="fa-solid fa-image"></i>
+                    Image Upload
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="sidebar-section">
+            <div class="sidebar-label">Inference Settings</div>
+            
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label for="device">Hardware Device</label>
+                <select id="device">
+                    <option value="cuda" selected>GPU (CUDA)</option>
+                    <option value="cpu">CPU</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label for="imgsz">Inference Image Size</label>
+                <select id="imgsz">
+                    <option value="320">320 px</option>
+                    <option value="416" selected>416 px</option>
+                    <option value="640">640 px</option>
+                    <option value="960">960 px</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label for="conf">Confidence Threshold</label>
+                <div class="slider-container">
+                    <input type="range" id="conf" min="0.0" max="1.0" step="0.01" value="0.25">
+                    <span class="slider-value" id="conf-val">0.25</span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label for="dot-radius">Dot Size (Centroids)</label>
+                <div class="slider-container">
+                    <input type="range" id="dot-radius" min="1" max="10" step="1" value="3">
+                    <span class="slider-value" id="dot-radius-val">3</span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label for="font-scale">Font Scale (Labels)</label>
+                <div class="slider-container">
+                    <input type="range" id="font-scale" min="0.1" max="2.0" step="0.1" value="0.6">
+                    <span class="slider-value" id="font-scale-val">0.6</span>
+                </div>
+            </div>
+
+            <div class="switch-container" style="margin-bottom: 12px;">
+                <label for="show-ids">Show Centroid Labels/IDs</label>
+                <label class="switch">
+                    <input type="checkbox" id="show-ids" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="switch-container" style="margin-bottom: 8px;">
+                <label for="auto-save">Auto-save on Threshold</label>
+                <label class="switch">
+                    <input type="checkbox" id="auto-save">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="form-group" id="autosave-thresh-group" style="display: none;">
+                <label for="auto-save-thresh">Threshold Count</label>
+                <input type="number" id="auto-save-thresh" min="1" value="20">
+            </div>
+        </div>
+
+        <!-- Bottom Actions -->
+        <div class="sidebar-section" style="margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-color);">
+            <button class="btn btn-secondary" id="reset-counts-btn">
+                <i class="fa-solid fa-arrows-rotate"></i>
+                Reset Local Count
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Panel -->
+    <main>
+        <!-- Telemetry Cards -->
+        <div class="metrics-grid">
+            <div class="metric-card active-metric">
+                <div class="metric-info">
+                    <h3>Current Count</h3>
+                    <div class="metric-value" id="current-count">0</div>
+                </div>
+                <div class="metric-icon">
+                    <i class="fa-solid fa-list-ol"></i>
+                </div>
+            </div>
+
+            <div class="metric-card active-metric">
+                <div class="metric-info">
+                    <h3>Cumulative Total</h3>
+                    <div class="metric-value" id="cumulative-count">0</div>
+                </div>
+                <div class="metric-icon font-orange">
+                    <i class="fa-solid fa-chart-line" style="color: var(--warning);"></i>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-info">
+                    <h3>Inference FPS</h3>
+                    <div class="metric-value" id="fps-metric">0.0</div>
+                </div>
+                <div class="metric-icon">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+            </div>
+
+            <div class="metric-card success-metric">
+                <div class="metric-info">
+                    <h3>System State</h3>
+                    <div class="metric-value" id="system-status" style="font-size: 16px; font-weight: 600; color: var(--success);">ONLINE</div>
+                </div>
+                <div class="metric-icon">
+                    <i class="fa-solid fa-server"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Viewport Section -->
+        <div class="viewport-section">
+            <div class="viewport-header">
+                <div class="viewport-title">
+                    <i class="fa-solid fa-circle-play" id="viewport-mode-icon"></i>
+                    <h2 id="viewport-mode-title">Webcam Stream</h2>
+                </div>
+                <div class="live-badge" id="viewport-badge">
+                    <span class="live-dot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background-color:white;"></span>
+                    Live
+                </div>
+            </div>
+
+            <div class="viewport-window">
+                <!-- Overlay loading spinner -->
+                <div class="loading-overlay" id="viewport-loading">
+                    <div class="spinner"></div>
+                    <span id="viewport-loading-text">Loading feed...</span>
+                </div>
+
+                <!-- Feed Output view -->
+                <img id="stream-viewport" class="stream-view" alt="Processed Output Stream">
+
+                <!-- Static Placeholder when stopped -->
+                <div class="viewport-placeholder" id="stream-placeholder">
+                    <i class="fa-solid fa-video-slash"></i>
+                    <div>
+                        <h3 style="color: var(--text-main); font-size:16px;">Feed Disconnected</h3>
+                        <p style="font-size:12px; margin-top:4px;">Select model and start the camera stream</p>
+                    </div>
+                </div>
+
+                <!-- Drag and drop zone for Image upload mode -->
+                <div class="upload-zone" id="image-upload-zone" style="display: none; width: 85%; height: 80%;">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <div class="upload-zone-text">
+                        <h4>Drag and drop your image here</h4>
+                        <p>Supports PNG, JPG, JPEG (Max 15MB)</p>
+                    </div>
+                    <input type="file" id="image-file-input" accept="image/*" style="display: none;">
+                    <button class="btn btn-secondary" style="width: auto;" onclick="document.getElementById('image-file-input').click()">Browse Files</button>
+                </div>
+
+                <!-- Video upload zone for Video demo mode -->
+                <div class="upload-zone" id="video-upload-zone" style="display: none; width: 85%; height: 80%;">
+                    <i class="fa-solid fa-file-video"></i>
+                    <div class="upload-zone-text">
+                        <h4>Upload video demo file</h4>
+                        <p>Supports MP4, AVI, MKV, MOV (Max 100MB)</p>
+                    </div>
+                    <input type="file" id="video-file-input" accept="video/*" style="display: none;">
+                    <button class="btn btn-secondary" style="width: auto;" onclick="document.getElementById('video-file-input').click()">Select Video</button>
+                </div>
+            </div>
+
+            <!-- Viewport Controls -->
+            <div class="viewport-actions">
+                <div class="actions-left">
+                    <button class="btn btn-primary" id="start-btn" style="width: auto; min-width: 140px;">
+                        <i class="fa-solid fa-play"></i> Start Stream
+                    </button>
+                    <button class="btn btn-danger" id="stop-btn" style="width: auto; display: none;">
+                        <i class="fa-solid fa-stop"></i> Stop
+                    </button>
+                </div>
+
+                <div class="actions-right">
+                    <button class="btn btn-secondary" id="snap-btn" style="width: auto;" disabled>
+                        <i class="fa-solid fa-camera-retro"></i> Capture Snapshot
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Grid: Logs and Gallery -->
+        <div class="dashboard-bottom-grid">
+            <!-- Logging Console -->
+            <div class="console-section">
+                <div class="sidebar-label" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>System Event Logs</span>
+                    <i class="fa-solid fa-terminal" style="color:var(--text-dark);"></i>
+                </div>
+                <div class="console-window" id="console-logs">
+                    <div class="console-line"><span class="timestamp">[14:38:00]</span>System logs initialized. Ready.</div>
+                </div>
+            </div>
+
+            <!-- Snapshots Manager -->
+            <div class="gallery-section">
+                <div class="gallery-header">
+                    <div class="sidebar-label">Captured Snapshots</div>
+                    <button class="btn btn-secondary" id="refresh-gallery-btn" style="padding: 6px 12px; font-size: 11px; width: auto;">
+                        <i class="fa-solid fa-arrows-rotate"></i> Reload
+                    </button>
+                </div>
+                <div class="gallery-grid" id="snapshots-gallery">
+                    <!-- Dynamic Items -->
+                    <div class="gallery-empty">No snapshots captured yet</div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal View for Snapshots -->
+<div class="modal" id="viewer-modal">
+    <div class="modal-content">
+        <span class="modal-close" id="modal-close">&times;</span>
+        <img id="modal-image" src="" alt="Snapshot Large View">
+    </div>
+</div>
+
+<!-- Hidden webcam element for JS webcam mode -->
+<video id="webcam-video" autoplay playsinline muted></video>
+
+<!-- Client JavaScript App Orchestrator -->
+<script>
+    // System Configurations & State Variables
+    let selectedModel = '';
+    let activeMode = 'webcam'; // webcam, drone, video, image
+    let isPlaying = false;
+    let localStream = null;
+    let webcamTimer = null;
+    let metricsTimer = null;
+    let uploadedVideoName = null;
+    let isProcessingFrame = false;
+
+    // Elements
+    const modelSelect = document.getElementById('model-select');
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const deviceSelect = document.getElementById('device');
+    const imgszSelect = document.getElementById('imgsz');
+    
+    // Sliders
+    const confSlider = document.getElementById('conf');
+    const confVal = document.getElementById('conf-val');
+    const dotRadiusSlider = document.getElementById('dot-radius');
+    const dotRadiusVal = document.getElementById('dot-radius-val');
+    const fontScaleSlider = document.getElementById('font-scale');
+    const fontScaleVal = document.getElementById('font-scale-val');
+    
+    // Switches
+    const showIdsBox = document.getElementById('show-ids');
+    const autoSaveBox = document.getElementById('auto-save');
+    const autoSaveThresh = document.getElementById('auto-save-thresh');
+    const autosaveThreshGroup = document.getElementById('autosave-thresh-group');
+    
+    // Counters
+    const curCountMetric = document.getElementById('current-count');
+    const cumCountMetric = document.getElementById('cumulative-count');
+    const fpsMetric = document.getElementById('fps-metric');
+    const systemStatus = document.getElementById('system-status');
+    
+    // Viewport
+    const streamViewport = document.getElementById('stream-viewport');
+    const streamPlaceholder = document.getElementById('stream-placeholder');
+    const viewportLoading = document.getElementById('viewport-loading');
+    const viewportLoadingText = document.getElementById('viewport-loading-text');
+    const viewportBadge = document.getElementById('viewport-badge');
+    const viewportModeTitle = document.getElementById('viewport-mode-title');
+    const viewportModeIcon = document.getElementById('viewport-mode-icon');
+    
+    // Upload Zones
+    const imageUploadZone = document.getElementById('image-upload-zone');
+    const imageFileInput = document.getElementById('image-file-input');
+    const videoUploadZone = document.getElementById('video-upload-zone');
+    const videoFileInput = document.getElementById('video-file-input');
+    
+    // Action Buttons
+    const startBtn = document.getElementById('start-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const snapBtn = document.getElementById('snap-btn');
+    const resetCountsBtn = document.getElementById('reset-counts-btn');
+    
+    // Logs
+    const consoleLogs = document.getElementById('console-logs');
+    
+    // Gallery
+    const snapshotsGallery = document.getElementById('snapshots-gallery');
+    const refreshGalleryBtn = document.getElementById('refresh-gallery-btn');
+    const viewerModal = document.getElementById('viewer-modal');
+    const modalImage = document.getElementById('modal-image');
+    const modalClose = document.getElementById('modal-close');
+
+    // Canvas elements for frame grabbing
+    const captureCanvas = document.createElement('canvas');
+    const captureCtx = captureCanvas.getContext('2d');
+    const webcamVideo = document.getElementById('webcam-video');
+
+    // Init Logic
+    window.addEventListener('DOMContentLoaded', () => {
+        setupSettingsEvents();
+        fetchModels();
+        loadSnapshots();
+        setupDragAndDrop();
+    });
+
+    // Logging Console Helper
+    function logConsole(message, type = 'normal') {
+        const line = document.createElement('div');
+        line.className = `console-line ${type}-line`;
+        
+        const now = new Date();
+        const timestamp = `[${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}]`;
+        
+        line.innerHTML = `<span class="timestamp">${timestamp}</span>${message}`;
+        consoleLogs.appendChild(line);
+        consoleLogs.scrollTop = consoleLogs.scrollHeight;
+    }
+
+    // Load registered drivers from server
+    async function fetchModels() {
+        try {
+            const res = await fetch('/available_models');
+            const models = await res.json();
+            
+            modelSelect.innerHTML = '';
+            if (models.length === 0) {
+                const opt = document.createElement('option');
+                opt.text = 'No drivers available';
+                opt.disabled = true;
+                modelSelect.appendChild(opt);
+                logConsole('Error: No drivers found on server.', 'error');
+                return;
+            }
+
+            models.forEach((model, idx) => {
+                const opt = document.createElement('option');
+                opt.value = model;
+                opt.text = model;
+                if (idx === 0) opt.selected = true;
+                modelSelect.appendChild(opt);
+            });
+            
+            selectedModel = modelSelect.value;
+            logConsole(`Models loaded. Default: ${selectedModel}`);
+            
+            modelSelect.addEventListener('change', () => {
+                const old = selectedModel;
+                selectedModel = modelSelect.value;
+                logConsole(`Switched model from ${old} to ${selectedModel}`);
+                if (isPlaying) {
+                    stopSession();
+                    startSession();
+                }
+            });
+        } catch (err) {
+            logConsole(`Failed to fetch models: ${err.message}`, 'error');
+        }
+    }
+
+    // Set Slider Event Listeners
+    function setupSettingsEvents() {
+        confSlider.addEventListener('input', () => {
+            confVal.textContent = confSlider.value;
+        });
+        dotRadiusSlider.addEventListener('input', () => {
+            dotRadiusVal.textContent = dotRadiusSlider.value;
+        });
+        fontScaleSlider.addEventListener('input', () => {
+            fontScaleVal.textContent = fontScaleSlider.value;
+        });
+        autoSaveBox.addEventListener('change', () => {
+            if (autoSaveBox.checked) {
+                autosaveThreshGroup.style.display = 'flex';
+            } else {
+                autosaveThreshGroup.style.display = 'none';
+            }
+        });
+        
+        // Mode buttons click listener
+        modeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.dataset.mode === activeMode) return;
+                
+                // Warn or stop active sessions
+                if (isPlaying) {
+                    stopSession();
+                }
+                
+                modeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                activeMode = btn.dataset.mode;
+                logConsole(`Changed mode to: ${activeMode.toUpperCase()}`);
+                
+                updateModeLayout();
+            });
+        });
+
+        // Trigger start/stop
+        startBtn.addEventListener('click', startSession);
+        stopBtn.addEventListener('click', stopSession);
+        snapBtn.addEventListener('click', captureSnapshotOnServer);
+        resetCountsBtn.addEventListener('click', resetCounters);
+        
+        // Refresh Snapshots
+        refreshGalleryBtn.addEventListener('click', loadSnapshots);
+        
+        // Modal Events
+        modalClose.addEventListener('click', () => viewerModal.classList.remove('active'));
+        viewerModal.addEventListener('click', (e) => {
+            if (e.target === viewerModal) viewerModal.classList.remove('active');
+        });
+    }
+
+    // Layout configuration depending on the active Mode
+    function updateModeLayout() {
+        // Reset viewport display
+        streamViewport.src = '';
+        streamViewport.classList.remove('active-img');
+        streamPlaceholder.style.display = 'flex';
+        viewportLoading.classList.remove('active');
+        
+        // Hide zones by default
+        imageUploadZone.style.display = 'none';
+        videoUploadZone.style.display = 'none';
+        
+        // Reset actions buttons
+        startBtn.style.display = 'flex';
+        stopBtn.style.display = 'none';
+        startBtn.disabled = false;
+        snapBtn.disabled = true;
+
+        // Reset metrics values
+        curCountMetric.textContent = '0';
+        cumCountMetric.textContent = '0';
+        fpsMetric.textContent = '0.0';
+
+        if (activeMode === 'webcam') {
+            viewportModeTitle.textContent = 'Webcam Stream';
+            viewportModeIcon.className = 'fa-solid fa-camera';
+            viewportBadge.style.display = 'flex';
+            viewportBadge.className = 'live-badge inactive';
+            startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start Camera';
+        } 
+        else if (activeMode === 'drone') {
+            viewportModeTitle.textContent = 'Drone RTMP Live Feed';
+            viewportModeIcon.className = 'fa-solid fa-helicopter';
+            viewportBadge.style.display = 'flex';
+            viewportBadge.className = 'live-badge inactive';
+            startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Connect RTMP Stream';
+        }
+        else if (activeMode === 'video') {
+            viewportModeTitle.textContent = 'Video File Demo';
+            viewportModeIcon.className = 'fa-solid fa-circle-play';
+            viewportBadge.style.display = 'none';
+            
+            // Show video upload zone
+            videoUploadZone.style.display = 'flex';
+            streamPlaceholder.style.display = 'none';
+            startBtn.innerHTML = '<i class="fa-solid fa-circle-play"></i> Play Video';
+            
+            if (!uploadedVideoName) {
+                startBtn.disabled = true;
+            }
+        }
+        else if (activeMode === 'image') {
+            viewportModeTitle.textContent = 'Image Detection';
+            viewportModeIcon.className = 'fa-solid fa-image';
+            viewportBadge.style.display = 'none';
+            
+            // Show image upload zone
+            imageUploadZone.style.display = 'flex';
+            streamPlaceholder.style.display = 'none';
+            startBtn.style.display = 'none'; // No start button needed for images
+            stopBtn.style.display = 'none';
+        }
+    }
+
+    // Drag & Drop for Image and Video zones
+    function setupDragAndDrop() {
+        // Image drag over
+        ['dragenter', 'dragover'].forEach(eventName => {
+            imageUploadZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                imageUploadZone.classList.add('dragover');
+            }, false);
+            
+            videoUploadZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                videoUploadZone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            imageUploadZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                imageUploadZone.classList.remove('dragover');
+            }, false);
+            
+            videoUploadZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                videoUploadZone.classList.remove('dragover');
+            }, false);
+        });
+
+        // Drop file handling
+        imageUploadZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                handleImageFile(files[0]);
+            }
+        });
+
+        videoUploadZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                handleVideoFile(files[0]);
+            }
+        });
+
+        // File inputs change
+        imageFileInput.addEventListener('change', () => {
+            if (imageFileInput.files.length > 0) {
+                handleImageFile(imageFileInput.files[0]);
+            }
+        });
+
+        videoFileInput.addEventListener('change', () => {
+            if (videoFileInput.files.length > 0) {
+                handleVideoFile(videoFileInput.files[0]);
+            }
+        });
+    }
+
+    // Start running session (stream/webcam/video)
+    function startSession() {
+        if (!selectedModel) {
+            logConsole('Error: No model selected.', 'error');
+            return;
+        }
+
+        isPlaying = true;
+        startBtn.style.display = 'none';
+        stopBtn.style.display = 'flex';
+        snapBtn.disabled = false;
+        
+        viewportLoading.classList.add('active');
+        streamPlaceholder.style.display = 'none';
+        
+        logConsole(`Session started for model: ${selectedModel}`);
+
+        if (activeMode === 'webcam') {
+            startWebcamSession();
+        } 
+        else if (activeMode === 'drone') {
+            startDroneSession();
+        }
+        else if (activeMode === 'video') {
+            startVideoSession();
+        }
+    }
+
+    // Stop session
+    function stopSession() {
+        isPlaying = false;
+        startBtn.style.display = 'flex';
+        stopBtn.style.display = 'none';
+        snapBtn.disabled = true;
+        
+        viewportLoading.classList.remove('active');
+        
+        // Clear viewport image src
+        streamViewport.src = '';
+        streamViewport.classList.remove('active-img');
+        
+        logConsole('Session stopped.');
+
+        if (activeMode === 'webcam') {
+            stopWebcamSession();
+            streamPlaceholder.style.display = 'flex';
+            viewportBadge.className = 'live-badge inactive';
+        }
+        else if (activeMode === 'drone') {
+            stopDroneSession();
+            streamPlaceholder.style.display = 'flex';
+            viewportBadge.className = 'live-badge inactive';
+        }
+        else if (activeMode === 'video') {
+            stopVideoSession();
+            videoUploadZone.style.display = 'flex';
+        }
+    }
+
+    // --- Web Camera Processing Logic (Client -> Server AJAX Loop) ---
+    async function startWebcamSession() {
+        viewportLoadingText.textContent = 'Acquiring local camera...';
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 640, height: 480 }
+            });
+            webcamVideo.srcObject = localStream;
+            webcamVideo.play();
+            
+            viewportLoading.classList.remove('active');
+            streamViewport.classList.add('active-img');
+            viewportBadge.className = 'live-badge';
+            
+            logConsole('Webcam access approved. Starting inference pipeline.');
+
+            isProcessingFrame = false;
+            // Frame sending loop: trigger immediately
+            sendWebcamFrame();
+        } catch (err) {
+            logConsole(`Webcam error: ${err.message}`, 'error');
+            stopSession();
+        }
+    }
+
+    function stopWebcamSession() {
+        isProcessingFrame = false;
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            localStream = null;
+        }
+        webcamVideo.srcObject = null;
+    }
+
+    async function sendWebcamFrame() {
+        if (!isPlaying || isProcessingFrame || webcamVideo.paused || webcamVideo.ended) return;
+
+        isProcessingFrame = true;
+
+        // Draw webcam video frame onto canvas with fixed 640x480 resolution for network efficiency
+        captureCanvas.width = 640;
+        captureCanvas.height = 480;
+        captureCtx.drawImage(webcamVideo, 0, 0, 640, 480);
+        
+        // Convert to JPG blob with slightly lower quality (0.55) to reduce bandwidth and network latency
+        captureCanvas.toBlob(async (blob) => {
+            if (!blob) {
+                isProcessingFrame = false;
+                if (isPlaying) requestAnimationFrame(sendWebcamFrame);
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('frame', blob, 'frame.jpg');
+            
+            // Append settings
+            formData.append('device', deviceSelect.value);
+            formData.append('imgsz', imgszSelect.value);
+            formData.append('conf', confSlider.value);
+            formData.append('show_ids', showIdsBox.checked);
+            formData.append('dot_radius', dotRadiusSlider.value);
+            formData.append('font_scale', fontScaleSlider.value);
+            formData.append('auto_save', autoSaveBox.checked);
+            formData.append('auto_save_thresh', autoSaveThresh.value);
+
+            try {
+                const res = await fetch(`/process_frame/${selectedModel}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if (data.status === 'success' && isPlaying) {
+                    streamViewport.src = 'data:image/jpeg;base64,' + data.image;
+                    
+                    // Update telemetry
+                    curCountMetric.textContent = data.current_count;
+                    cumCountMetric.textContent = data.cumulative_total;
+                    fpsMetric.textContent = data.fps;
+                    
+                    if (data.device_used === 'cpu' && deviceSelect.value === 'cuda') {
+                        systemStatus.textContent = 'CUDA FALLBACK';
+                        systemStatus.style.color = 'var(--warning)';
+                        if (!window.loggedFallback) {
+                            logConsole("Warning: GPU (CUDA) execution failed. Falling back to CPU. Check backend logs for errors.", "error");
+                            window.loggedFallback = true;
+                        }
+                    } else {
+                        window.loggedFallback = false;
+                        if (data.label) {
+                            systemStatus.textContent = `${data.label} (${(data.confidence * 100).toFixed(0)}%)`;
+                            systemStatus.style.color = 'var(--success)';
+                        } else {
+                            systemStatus.textContent = 'ONLINE';
+                            systemStatus.style.color = 'var(--success)';
+                        }
+                    }
+                } else if (data.status === 'error') {
+                    logConsole(`Server inference error: ${data.message}`, 'error');
+                    stopSession();
+                }
+            } catch (err) {
+                console.error("Frame upload failed:", err);
+            } finally {
+                isProcessingFrame = false;
+                // Schedule the next frame immediately if still playing
+                if (isPlaying) {
+                    requestAnimationFrame(sendWebcamFrame);
+                }
+            }
+        }, 'image/jpeg', 0.55);
+    }
+
+    // --- Drone Mode Live Stream Processing (MJPEG) ---
+    function startDroneSession() {
+        viewportLoadingText.textContent = 'Connecting local RTMP feed...';
+        
+        // Construct feed query parameters
+        const params = new URLSearchParams({
+            device: deviceSelect.value,
+            imgsz: imgszSelect.value,
+            conf: confSlider.value,
+            show_ids: showIdsBox.checked,
+            dot_radius: dotRadiusSlider.value,
+            font_scale: fontScaleSlider.value,
+            auto_save: autoSaveBox.checked,
+            auto_save_thresh: autoSaveThresh.value
+        });
+
+        // Set viewport src directly to MJPEG stream
+        streamViewport.src = `/video_feed/drone/${selectedModel}?${params.toString()}`;
+        
+        // Handle stream load success
+        streamViewport.onload = () => {
+            if (isPlaying) {
+                viewportLoading.classList.remove('active');
+                streamViewport.classList.add('active-img');
+                viewportBadge.className = 'live-badge';
+                logConsole('RTMP Stream connected successfully.');
+            }
+        };
+
+        streamViewport.onerror = () => {
+            if (isPlaying) {
+                logConsole('RTMP connection failed. Ensure MediaMTX server is running and publishing stream.', 'error');
+                stopSession();
+            }
+        };
+
+        // Poll telemetry metrics every 300ms
+        metricsTimer = setInterval(pollMetrics, 300);
+    }
+
+    function stopDroneSession() {
+        if (metricsTimer) {
+            clearInterval(metricsTimer);
+            metricsTimer = null;
+        }
+    }
+
+    // --- Video File Demo Mode Processing (Upload + MJPEG) ---
+    function handleVideoFile(file) {
+        if (!file.type.startsWith('video/')) {
+            logConsole('Unsupported file type. Please upload a video file.', 'error');
+            return;
+        }
+
+        logConsole(`Uploading video file: ${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)...`);
+        viewportLoadingText.textContent = 'Uploading test video...';
+        viewportLoading.classList.add('active');
+
+        const formData = new FormData();
+        formData.append('video', file);
+
+        fetch('/video_upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            viewportLoading.classList.remove('active');
+            if (data.status === 'success') {
+                uploadedVideoName = data.filename;
+                logConsole(`Video uploaded successfully as: ${uploadedVideoName}`);
+                
+                // Configure layout for ready playback
+                videoUploadZone.style.display = 'none';
+                streamPlaceholder.style.display = 'flex';
+                startBtn.disabled = false;
+            } else {
+                logConsole(`Video upload failed: ${data.message}`, 'error');
+            }
+        })
+        .catch(err => {
+            viewportLoading.classList.remove('active');
+            logConsole(`Upload error: ${err.message}`, 'error');
+        });
+    }
+
+    function startVideoSession() {
+        if (!uploadedVideoName) return;
+        
+        viewportLoadingText.textContent = 'Initializing inference playback...';
+        
+        const params = new URLSearchParams({
+            device: deviceSelect.value,
+            imgsz: imgszSelect.value,
+            conf: confSlider.value,
+            show_ids: showIdsBox.checked,
+            dot_radius: dotRadiusSlider.value,
+            font_scale: fontScaleSlider.value,
+            auto_save: autoSaveBox.checked,
+            auto_save_thresh: autoSaveThresh.value
+        });
+
+        // Set src to video MJPEG endpoint
+        streamViewport.src = `/video_feed/demo/${uploadedVideoName}/${selectedModel}?${params.toString()}`;
+        
+        streamViewport.onload = () => {
+            if (isPlaying) {
+                viewportLoading.classList.remove('active');
+                streamViewport.classList.add('active-img');
+                logConsole('Video demo stream playing.');
+            }
+        };
+
+        streamViewport.onerror = () => {
+            if (isPlaying) {
+                logConsole('Video playback encountered an error.', 'error');
+                stopSession();
+            }
+        };
+
+        // Poll telemetry metrics
+        metricsTimer = setInterval(pollMetrics, 300);
+    }
+
+    function stopVideoSession() {
+        if (metricsTimer) {
+            clearInterval(metricsTimer);
+            metricsTimer = null;
+        }
+    }
+
+    // Telemetry polling for video/drone streams
+    function pollMetrics() {
+        if (!isPlaying) return;
+        fetch(`/metrics/${selectedModel}`)
+        .then(res => res.json())
+        .then(data => {
+            curCountMetric.textContent = data.current_count;
+            cumCountMetric.textContent = data.cumulative_total;
+            fpsMetric.textContent = data.fps;
+            
+            if (data.label) {
+                systemStatus.textContent = `${data.label} (${(data.confidence * 100).toFixed(0)}%)`;
+                systemStatus.style.color = 'var(--success)';
+            } else {
+                systemStatus.textContent = 'ONLINE';
+                systemStatus.style.color = 'var(--success)';
+            }
+        })
+        .catch(err => {
+            console.error("Metrics polling failed:", err);
+        });
+    }
+
+    // --- Image Detection Mode Logic (AJAX upload & immediate return) ---
+    function handleImageFile(file) {
+        if (!file.type.startsWith('image/')) {
+            logConsole('Unsupported file type. Please upload an image.', 'error');
+            return;
+        }
+
+        if (!selectedModel) {
+            logConsole('Error: Select a model first before uploading.', 'error');
+            return;
+        }
+
+        logConsole(`Processing image: ${file.name}...`);
+        viewportLoadingText.textContent = 'Running model detection...';
+        viewportLoading.classList.add('active');
+        
+        // Reset old view
+        streamViewport.src = '';
+        streamViewport.classList.remove('active-img');
+
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('model_name', selectedModel);
+        formData.append('device', deviceSelect.value);
+        formData.append('imgsz', imgszSelect.value);
+        formData.append('conf', confSlider.value);
+        formData.append('show_ids', showIdsBox.checked);
+        formData.append('dot_radius', dotRadiusSlider.value);
+        formData.append('font_scale', fontScaleSlider.value);
+
+        fetch('/image_upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            viewportLoading.classList.remove('active');
+            if (data.status === 'success') {
+                imageUploadZone.style.display = 'none';
+                streamViewport.src = 'data:image/jpeg;base64,' + data.image;
+                streamViewport.classList.add('active-img');
+                
+                // Show telemetry stats
+                curCountMetric.textContent = data.count;
+                fpsMetric.textContent = 'N/A';
+                
+                if (data.label) {
+                    systemStatus.textContent = `${data.label} (${(data.confidence * 100).toFixed(0)}%)`;
+                    systemStatus.style.color = 'var(--success)';
+                } else {
+                    systemStatus.textContent = 'ONLINE';
+                    systemStatus.style.color = 'var(--success)';
+                }
+
+                snapBtn.disabled = false; // Allow saving manual snapshot of this result
+                logConsole(`Image processed. Detections count: ${data.count}`);
+            } else {
+                logConsole(`Model execution failed: ${data.message}`, 'error');
+                imageUploadZone.style.display = 'flex';
+            }
+        })
+        .catch(err => {
+            viewportLoading.classList.remove('active');
+            logConsole(`Image execution error: ${err.message}`, 'error');
+            imageUploadZone.style.display = 'flex';
+        });
+    }
+
+    // --- General Dashboard Commands ---
+
+    function resetCounters() {
+        if (!selectedModel) return;
+        fetch(`/reset_counts/${selectedModel}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                curCountMetric.textContent = '0';
+                cumCountMetric.textContent = '0';
+                logConsole(`Reset metrics for ${selectedModel}.`);
+            }
+        });
+    }
+
+    // Capture Snapshot command
+    function captureSnapshotOnServer() {
+        if (!selectedModel) return;
+        
+        fetch('/capture_snapshot', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model_name: selectedModel })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                logConsole(`Snapshot saved manually: ${data.filename}`, 'info');
+                // Reload gallery
+                loadSnapshots();
+            } else {
+                logConsole(`Snapshot capture failed: ${data.message}`, 'error');
+            }
+        })
+        .catch(err => {
+            logConsole(`Capture error: ${err.message}`, 'error');
+        });
+    }
+
+    // Load snapshots gallery from server
+    function loadSnapshots() {
+        fetch('/snapshots')
+        .then(res => res.json())
+        .then(files => {
+            snapshotsGallery.innerHTML = '';
+            if (files.length === 0) {
+                snapshotsGallery.innerHTML = '<div class="gallery-empty">No snapshots captured yet</div>';
+                return;
+            }
+
+            files.forEach(filename => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                
+                const img = document.createElement('img');
+                img.src = `/snapshots/${filename}`;
+                img.loading = 'lazy';
+                
+                const actions = document.createElement('div');
+                actions.className = 'gallery-item-actions';
+                
+                // Zoom action
+                const viewBtn = document.createElement('div');
+                viewBtn.className = 'gallery-action-btn';
+                viewBtn.innerHTML = '<i class="fa-solid fa-maximize"></i>';
+                viewBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    modalImage.src = `/snapshots/${filename}`;
+                    viewerModal.classList.add('active');
+                });
+
+                // Download action
+                const dlBtn = document.createElement('div');
+                dlBtn.className = 'gallery-action-btn';
+                dlBtn.innerHTML = '<i class="fa-solid fa-download"></i>';
+                dlBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const link = document.createElement('a');
+                    link.href = `/snapshots/${filename}`;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+
+                // Delete action
+                const delBtn = document.createElement('div');
+                delBtn.className = 'gallery-action-btn del-btn';
+                delBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (confirm('Delete this snapshot permanently?')) {
+                        deleteSnapshot(filename);
+                    }
+                });
+
+                actions.appendChild(viewBtn);
+                actions.appendChild(dlBtn);
+                actions.appendChild(delBtn);
+                
+                item.appendChild(img);
+                item.appendChild(actions);
+                
+                // Clicking item opens modal
+                item.addEventListener('click', () => {
+                    modalImage.src = `/snapshots/${filename}`;
+                    viewerModal.classList.add('active');
+                });
+                
+                snapshotsGallery.appendChild(item);
+            });
+        })
+        .catch(err => {
+            console.error("Gallery loading failed:", err);
+        });
+    }
+
+    // Delete Snapshot
+    function deleteSnapshot(filename) {
+        fetch(`/snapshots/delete/${filename}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                logConsole(`Snapshot deleted: ${filename}`);
+                loadSnapshots();
+            } else {
+                logConsole(`Delete failed: ${data.message}`, 'error');
+            }
+        })
+        .catch(err => {
+            logConsole(`Error deleting snapshot: ${err.message}`, 'error');
+        });
+    }
+</script>
+
+</body>
+</html>

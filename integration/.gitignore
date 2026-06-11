@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.gemini/
+brain/
+scratch/
+snapshots/
+temp_uploads/
+.idea/
+.vscode/
+venv/
+mediamtx_v1.15.5_windows_amd64/
+
+# Exclude large model weight files to prevent GitHub push errors (exceeding 100MB limit)
+models/*.pt
+models/*.pth
+*.pt
+*.pth

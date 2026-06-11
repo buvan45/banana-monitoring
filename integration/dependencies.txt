@@ -20,3 +20,11 @@ pip install requests
 
 # --- frontend.py ---
 streamlit run frontend.py (terminal)
+
+
+for drone mode:
+connect phone and laptop with same wifi network
+run the mediamtx app
+look for ipv4 address
+enter the ipv4address/rtmp-port-number in the djifly app in phone
+

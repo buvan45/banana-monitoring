@@ -5,18 +5,16 @@ from pathlib import Path
 from PIL import Image
 import cv2
 import numpy as np
-import torch
-import torch.nn.functional as F
-import timm
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
 
 # Edit these paths to point to your actual model file if different
-_PROJECT_DIR = Path(__file__).resolve().parent.parent
-MODEL_PATH = str(_PROJECT_DIR.joinpath("models", "banana_leaf_disease.pth"))
+_THIS_DIR = Path(__file__).resolve().parent
+MODEL_PATH = str(_THIS_DIR.parent.joinpath("models", "banana_leaf_disease.pth"))
 MODEL_NAME = "efficientnet_b0"
 IMG_SIZE = 224
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
+def get_device():
+    import torch
+    return "cuda" if torch.cuda.is_available() else "cpu"
 
 CLASS_NAMES = [
     "Black Sigatoka Disease",
@@ -29,17 +27,25 @@ CLASS_NAMES = [
 ]
 
 def make_transform(img_size):
+    import albumentations as A
+    from albumentations.pytorch import ToTensorV2
     return A.Compose([
         A.Resize(img_size, img_size),
         A.Normalize(mean=(0.485,0.456,0.406), std=(0.229,0.224,0.225)),
         ToTensorV2()
     ])
 
-def load_model(model_path=MODEL_PATH, model_name=MODEL_NAME, num_classes=len(CLASS_NAMES), device=DEVICE):
+def load_model(model_path=MODEL_PATH, model_name=MODEL_NAME, num_classes=len(CLASS_NAMES), device=None):
     # Lazy-load model and cache it on the module
     global _MODEL
     if "_MODEL" in globals():
         return _MODEL
+
+    import torch
+    import timm
+
+    if device is None:
+        device = get_device()
 
     model = timm.create_model(model_name, pretrained=False, num_classes=num_classes)
     state = torch.load(model_path, map_location=device)
@@ -64,7 +70,13 @@ def load_model(model_path=MODEL_PATH, model_name=MODEL_NAME, num_classes=len(CLA
     _MODEL = model
     return _MODEL
 
-def predict(model, transform, image_path, device=DEVICE):
+def predict(model, transform, image_path, device=None):
+    import torch
+    import torch.nn.functional as F
+
+    if device is None:
+        device = get_device()
+
     img = Image.open(image_path).convert("RGB")
     arr = np.array(img)
     data = transform(image=arr)
@@ -99,7 +111,7 @@ def run_banana_leaf_disease(image_path):
     model = load_model()
     transform = make_transform(IMG_SIZE)
 
-    idx, prob = predict(model, transform, image_path, DEVICE)
+    idx, prob = predict(model, transform, image_path, get_device())
     class_name = CLASS_NAMES[idx]
 
     annotated = annotate(image_path, class_name, prob)

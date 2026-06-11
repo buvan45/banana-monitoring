@@ -1,23 +1,24 @@
 # drivers/banana_disease_driver.py
 
-from ultralytics import YOLO
-
+# === Path to your trained disease classification model ===
+# (change this if you move the file)
 from pathlib import Path
-import os
+_THIS_DIR = Path(__file__).resolve().parent
+disease_model_path = str(_THIS_DIR.parent.joinpath("models", "banana_disease_classification.pt"))
 
-_PROJECT_DIR = Path(__file__).resolve().parent.parent
-disease_model_path = str(_PROJECT_DIR.joinpath("models", "banana_disease__classification.pt"))
+disease_model = None
+disease_class_names = None
 
-_DISEASE_MODEL = None
-disease_class_names = []
+def load_disease_model():
+    global disease_model, disease_class_names
+    if disease_model is None:
+        from ultralytics import YOLO
+        disease_model = YOLO(disease_model_path)
+        disease_class_names = list(disease_model.names.values())
+    return disease_model
 
-def get_disease_model():
-    global _DISEASE_MODEL, disease_class_names
-    if _DISEASE_MODEL is None:
-        _DISEASE_MODEL = YOLO(disease_model_path)
-        disease_class_names = list(_DISEASE_MODEL.names.values())
-        print("Banana disease classes:", disease_class_names)
-    return _DISEASE_MODEL
+def get_model():
+    return load_disease_model()
 
 # Optional: info/description for each disease class
 class_info = {
@@ -84,11 +85,8 @@ def run_banana_disease(image_path: str):
     info : dict
         Extra info about the class, including severity/advice and confidence.
     """
-    if not os.path.exists(disease_model_path):
-        raise FileNotFoundError(f"Model weights not found at: {disease_model_path}")
-
-    model = get_disease_model()
     # YOLO classification prediction
+    model = load_disease_model()
     results = model.predict(
         source=image_path,
         imgsz=224,
