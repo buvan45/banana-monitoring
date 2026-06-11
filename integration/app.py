@@ -8,6 +8,9 @@ Realtime Banana/Model Counter + Video Demo (multi-driver aware; banana & tree sp
 - Classification labels are drawn on the video for both Realtime and Video Demo.
 """
 
+import logging
+logging.getLogger("asyncio").setLevel(logging.CRITICAL)
+
 import sys
 from pathlib import Path
 import time
